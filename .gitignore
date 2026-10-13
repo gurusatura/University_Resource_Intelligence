@@ -1,0 +1,25 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables & secrets (NEVER commit credentials)
+.env
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Local databases
+*.db
+local_university.db
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
