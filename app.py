@@ -372,7 +372,7 @@ with tab_assistant:
         </div>
         """, unsafe_allow_html=True)
 
-    for msg in current_session["messages"]:
+    for idx, msg in enumerate(current_session["messages"]):
         if msg["role"] == "user":
             st.markdown(f"""
             <div class="chat-user-card">
@@ -397,7 +397,14 @@ with tab_assistant:
 
                 # Render dynamic chart if present
                 if msg.get("chart_obj"):
-                    st.plotly_chart(msg["chart_obj"], use_container_width=True)
+                    chart_key = f"chart_{current_session['id']}_{idx}_{msg.get('id', 'msg')}"
+                    st.plotly_chart(msg["chart_obj"], use_container_width=True, key=chart_key)
+                elif msg.get("data_records") and msg.get("tool_name") in ["get_classroom_utilization", "get_instructor_workload", "get_course_demand", "get_forecast"]:
+                    b_col, _ = st.columns([2, 5])
+                    with b_col:
+                        if st.button("📊 Show Chart", key=f"btn_vis_{current_session['id']}_{idx}_{msg.get('id', 'msg')}", help="Generate interactive visualization"):
+                            msg["chart_obj"] = make_chart_for_tool(msg.get("tool_name"), msg.get("data_records"))
+                            st.rerun()
 
                 # Render <> Executed SQL Accordion
                 if msg.get("sql_query"):
@@ -461,7 +468,16 @@ with tab_assistant:
                     elif "candidate_classrooms" in tool_result:
                         data_records = tool_result.get("candidate_classrooms", [])
 
-                chart_fig = make_chart_for_tool(tool_name, tool_result)
+                # Intelligent Chart Decision: Only render chart if user explicitly requested visualization
+                VISUAL_REQUEST_KEYWORDS = [
+                    "chart", "graph", "plot", "visualize", "visualization", "visual",
+                    "diagram", "histogram", "barchart", "bar chart", "line chart", "pie chart"
+                ]
+                user_wants_chart = any(kw in query_to_run.lower() for kw in VISUAL_REQUEST_KEYWORDS)
+
+                chart_fig = None
+                if user_wants_chart and tool_result:
+                    chart_fig = make_chart_for_tool(tool_name, tool_result)
 
             except Exception as e:
                 answer_text = f"An error occurred while executing the query: {str(e)}"
@@ -561,7 +577,7 @@ with tab_dashboard:
         )
         fig_u.update_layout(**PLOT_THEME, showlegend=False)
         fig_u.update_coloraxes(showscale=False)
-        st.plotly_chart(fig_u, use_container_width=True)
+        st.plotly_chart(fig_u, use_container_width=True, key="dash_chart_room_util")
 
     with r1_c2:
         fig_w = px.bar(
@@ -570,7 +586,7 @@ with tab_dashboard:
             title="Instructor Workload — Top 10 Faculty (Total Sessions)"
         )
         fig_w.update_layout(**PLOT_THEME)
-        st.plotly_chart(fig_w, use_container_width=True)
+        st.plotly_chart(fig_w, use_container_width=True, key="dash_chart_instructor_workload")
 
     r2_c1, r2_c2 = st.columns(2)
     with r2_c1:
@@ -580,7 +596,7 @@ with tab_dashboard:
             title="Course Demand — Top 10 Enrolled Courses"
         )
         fig_d.update_layout(**PLOT_THEME)
-        st.plotly_chart(fig_d, use_container_width=True)
+        st.plotly_chart(fig_d, use_container_width=True, key="dash_chart_course_demand")
 
     with r2_c2:
         colors_fc = ['#238636' if t == 'Increasing' else '#1f6feb' if t == 'Stable' else '#da3633' 
@@ -593,7 +609,7 @@ with tab_dashboard:
             )
         ])
         fig_f.update_layout(**PLOT_THEME, title="Fall 2026 Demand Projections (Linear Regression)")
-        st.plotly_chart(fig_f, use_container_width=True)
+        st.plotly_chart(fig_f, use_container_width=True, key="dash_chart_demand_forecast")
 
     # Data Tables
     t1, t2 = st.columns(2)
