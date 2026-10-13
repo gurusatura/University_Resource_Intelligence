@@ -6,10 +6,14 @@ import datetime
 import uuid
 import sys
 import os
+import importlib
 
-# Clean modular imports from src/ package
+# Clean modular imports from src/ package with automatic live reload
 from src import agent_tools
 from src import agent
+
+importlib.reload(agent_tools)
+importlib.reload(agent)
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
