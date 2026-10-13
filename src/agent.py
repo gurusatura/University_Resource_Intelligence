@@ -248,7 +248,7 @@ ORDER BY forecast_Fall_2026 DESC;"""
 }
 
 # ── Agentic Ask Detailed Function ─────────────────────────────────────────────
-def ask_detailed(question: str) -> dict:
+def ask_detailed(question: str, history: list = None) -> dict:
     """
     Send a natural-language question to the Groq agent.
     Performs tool calling automatically and returns a dictionary with:
@@ -257,11 +257,16 @@ def ask_detailed(question: str) -> dict:
     - tool_args: parameters passed to tool
     - tool_result: structured output from tool
     - sql_query: reference SQL query associated with the tool
+    Optionally receives prior conversation history from the active session.
     """
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": question}
-    ]
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    if history:
+        for h in history[-4:]:
+            if h.get("role") in ("user", "assistant") and h.get("content"):
+                messages.append({"role": h["role"], "content": h["content"]})
+
+    messages.append({"role": "user", "content": question})
 
     last_tool_name = None
     last_tool_args = {}

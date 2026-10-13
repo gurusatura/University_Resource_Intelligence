@@ -131,8 +131,26 @@ html, body, [class*="css"] {
     margin-bottom: 0.8rem;
 }
 
-/* Hide default streamlit chrome */
-#MainMenu, footer, header { visibility: hidden; }
+/* Sidebar collapse control: always visible when collapsed */
+[data-testid="stSidebarCollapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    background: #161b22 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 8px !important;
+    color: #e6edf3 !important;
+    padding: 6px !important;
+    margin: 8px !important;
+    z-index: 1000 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5) !important;
+}
+[data-testid="stSidebarCollapsedControl"] svg {
+    fill: #e6edf3 !important;
+}
+header[data-testid="stHeader"] {
+    background: transparent !important;
+}
+#MainMenu, footer { visibility: hidden; }
 .block-container { padding-top: 1.2rem; padding-bottom: 3rem; }
 </style>
 """, unsafe_allow_html=True)
@@ -219,11 +237,11 @@ def make_chart_for_tool(tool_name, tool_result):
     return None
 
 # ── Session State Management (Sessions & Message IDs) ─────────────────────────
-if "sessions" not in st.session_state:
+if "sessions" not in st.session_state or not st.session_state.sessions:
     initial_id = "session_1"
     st.session_state.sessions = {
         initial_id: {
-            "title": "Which classroom is used the most...",
+            "title": "New Conversation",
             "created_at": datetime.datetime.now().strftime("%I:%M %p"),
             "messages": []
         }
@@ -232,6 +250,10 @@ if "sessions" not in st.session_state:
 
 if "pending_query" not in st.session_state:
     st.session_state.pending_query = None
+
+# Ensure current session exists
+if st.session_state.get("current_session_id") not in st.session_state.sessions:
+    st.session_state.current_session_id = list(st.session_state.sessions.keys())[0]
 
 current_session = st.session_state.sessions[st.session_state.current_session_id]
 
@@ -251,15 +273,28 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
     # 2. + New Chat Button
-    if st.button("＋ New Chat", use_container_width=True):
-        new_id = f"session_{len(st.session_state.sessions) + 1}"
-        st.session_state.sessions[new_id] = {
-            "title": "New Conversation",
-            "created_at": datetime.datetime.now().strftime("%I:%M %p"),
-            "messages": []
-        }
-        st.session_state.current_session_id = new_id
-        st.rerun()
+    c_new1, c_new2 = st.columns([3, 1])
+    with c_new1:
+        if st.button("＋ New Chat", use_container_width=True):
+            new_id = f"session_{len(st.session_state.sessions) + 1}"
+            st.session_state.sessions[new_id] = {
+                "title": "New Conversation",
+                "created_at": datetime.datetime.now().strftime("%I:%M %p"),
+                "messages": []
+            }
+            st.session_state.current_session_id = new_id
+            st.rerun()
+    with c_new2:
+        if st.button("🗑️", help="Reset all chat sessions", use_container_width=True):
+            st.session_state.sessions = {
+                "session_1": {
+                    "title": "New Conversation",
+                    "created_at": datetime.datetime.now().strftime("%I:%M %p"),
+                    "messages": []
+                }
+            }
+            st.session_state.current_session_id = "session_1"
+            st.rerun()
 
     st.markdown("<div style='height:0.8rem'></div>", unsafe_allow_html=True)
 
@@ -267,7 +302,7 @@ with st.sidebar:
     st.markdown("<div style='font-size:0.72rem; color:#8b949e; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;'>Saved Chats</div>", unsafe_allow_html=True)
     for sid, sdata in list(st.session_state.sessions.items())[::-1]:
         is_active = (sid == st.session_state.current_session_id)
-        btn_label = f"💬 {sdata['title'][:28]}..." if len(sdata['title']) > 28 else f"💬 {sdata['title']}"
+        btn_label = f"💬 {sdata['title'][:24]}..." if len(sdata['title']) > 24 else f"💬 {sdata['title']}"
         if st.button(btn_label, key=f"session_btn_{sid}", use_container_width=True, type="primary" if is_active else "secondary"):
             st.session_state.current_session_id = sid
             st.rerun()
@@ -398,13 +433,14 @@ with tab_assistant:
         })
 
         # Update Session Title if First Query
-        if len(current_session["messages"]) <= 1 or current_session["title"] == "New Conversation":
-            current_session["title"] = query_to_run[:32] + ("..." if len(query_to_run) > 32 else "")
+        if current_session["title"] == "New Conversation":
+            current_session["title"] = query_to_run[:28] + ("..." if len(query_to_run) > 28 else "")
 
         # Execute AI Agent Analysis
         with st.spinner("Analyzing university data & executing query..."):
             try:
-                res = agent.ask_detailed(query_to_run)
+                prior_history = current_session["messages"][:-1]
+                res = agent.ask_detailed(query_to_run, history=prior_history)
                 answer_text = res.get("answer", "")
                 tool_name = res.get("tool_name")
                 tool_args = res.get("tool_args", {})
