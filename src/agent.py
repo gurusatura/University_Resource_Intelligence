@@ -194,16 +194,78 @@ def dispatch_tool(name: str, args: dict):
     else:
         return {"error": f"Unknown tool: {name}"}
 
-# ── Agentic Ask Function ───────────────────────────────────────────────────────
-def ask(question: str) -> str:
+TOOL_SQL_MAP = {
+    "get_classroom_utilization": """SELECT c.classroom_id, c.building_name || ' ' || c.room_number AS room_name,
+       SUM(EXTRACT(EPOCH FROM (t.end_time - t.start_time))/3600) AS total_scheduled_hours
+FROM schedule s
+JOIN timeslots t ON s.timeslot_id = t.timeslot_id
+JOIN classrooms c ON s.classroom_id = c.classroom_id
+WHERE t.timeslot_valid = TRUE
+GROUP BY c.classroom_id, room_name
+ORDER BY total_scheduled_hours DESC;""",
+
+    "get_instructor_workload": """SELECT i.instructor_id, i.first_name || ' ' || i.last_name AS instructor_name,
+       i.department, COUNT(s.schedule_id) AS total_sessions
+FROM schedule s
+JOIN instructors i ON s.instructor_id = i.instructor_id
+GROUP BY i.instructor_id, instructor_name, i.department
+ORDER BY total_sessions DESC;""",
+
+    "get_course_demand": """SELECT c.course_id, c.course_name, c.department,
+       COUNT(s.schedule_id) AS enrollment
+FROM schedule s
+JOIN courses c ON s.course_id = c.course_id
+GROUP BY c.course_id, c.course_name, c.department
+ORDER BY enrollment DESC;""",
+
+    "get_conflict_detection": """-- Detect Classroom Collisions & Instructor Overlaps
+SELECT c.classroom_id, c.building_name || ' ' || c.room_number AS room_name,
+       t.timeslot_id, t.day, t.start_time, t.end_time,
+       COUNT(DISTINCT s.course_id) AS overlapping_courses
+FROM schedule s
+JOIN classrooms c ON s.classroom_id = c.classroom_id
+JOIN timeslots t ON s.timeslot_id = t.timeslot_id
+GROUP BY c.classroom_id, room_name, t.timeslot_id, t.day, t.start_time, t.end_time
+HAVING COUNT(DISTINCT s.course_id) > 1
+ORDER BY overlapping_courses DESC;""",
+
+    "recommend_classroom": """-- Find Available Rooms Matching Required Capacity
+SELECT c.classroom_id, c.building_name || ' ' || c.room_number AS room_name,
+       c.capacity, COALESCE(u.scheduled_hours, 0) AS total_scheduled_hours
+FROM classrooms c
+WHERE c.capacity >= :required_capacity
+  AND c.classroom_id NOT IN (
+    SELECT classroom_id FROM schedule WHERE timeslot_id = :timeslot_id
+  )
+ORDER BY total_scheduled_hours ASC
+LIMIT 3;""",
+
+    "get_forecast": """-- Linear Regression Demand Model (Historical -> Fall 2026 Projection)
+SELECT course_id, course_name, AVG(enrollment) AS historical_mean,
+       trend_direction, coefficient, mae, forecast_Fall_2026
+FROM course_demand_forecast_model
+ORDER BY forecast_Fall_2026 DESC;"""
+}
+
+# ── Agentic Ask Detailed Function ─────────────────────────────────────────────
+def ask_detailed(question: str) -> dict:
     """
     Send a natural-language question to the Groq agent.
-    Performs tool calling automatically and returns a grounded answer.
+    Performs tool calling automatically and returns a dictionary with:
+    - answer: grounded text explanation
+    - tool_name: name of tool called (or None)
+    - tool_args: parameters passed to tool
+    - tool_result: structured output from tool
+    - sql_query: reference SQL query associated with the tool
     """
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": question}
     ]
+
+    last_tool_name = None
+    last_tool_args = {}
+    last_tool_result = None
 
     while True:
         response = client.chat.completions.create(
@@ -221,7 +283,14 @@ def ask(question: str) -> str:
         # If the model does not call any tool, return its final text answer
         if not response_message.tool_calls:
             raw_text = response_message.content or ""
-            return raw_text.replace('\u202f', ' ').replace('\xa0', ' ')
+            clean_text = raw_text.replace('\u202f', ' ').replace('\xa0', ' ')
+            return {
+                "answer": clean_text,
+                "tool_name": last_tool_name,
+                "tool_args": last_tool_args,
+                "tool_result": last_tool_result,
+                "sql_query": TOOL_SQL_MAP.get(last_tool_name, "") if last_tool_name else None
+            }
 
         # Model decided to call one or more tools
         messages.append(response_message)
@@ -235,6 +304,10 @@ def ask(question: str) -> str:
 
             print(f"  [tool call] {fn_name}({fn_args})")
             tool_result = dispatch_tool(fn_name, fn_args)
+
+            last_tool_name = fn_name
+            last_tool_args = fn_args
+            last_tool_result = tool_result
 
             # Format results concisely to stay well within token limits
             if fn_name == "get_conflict_detection" and isinstance(tool_result, dict):
@@ -258,6 +331,10 @@ def ask(question: str) -> str:
                 "name": fn_name,
                 "content": json.dumps(truncated_result)
             })
+
+def ask(question: str) -> str:
+    """Convenience wrapper returning plain answer text."""
+    return ask_detailed(question)["answer"]
 
 # ── Test Suite ─────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
