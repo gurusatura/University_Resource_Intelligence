@@ -1,10 +1,8 @@
 import os
 import sys
 
-# Add src/ to sys.path for clean modular imports
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
-
-import agent_tools
+# Clean modular imports from src/ package
+from src import agent_tools
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')

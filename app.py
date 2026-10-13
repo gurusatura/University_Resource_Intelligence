@@ -5,11 +5,9 @@ import plotly.graph_objects as go
 import sys
 import os
 
-# Add src/ to sys.path for clean modular imports
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
-
-import agent_tools
-import agent
+# Clean modular imports from src/ package
+from src import agent_tools
+from src import agent
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 st.set_page_config(
