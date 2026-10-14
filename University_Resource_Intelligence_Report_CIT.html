@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>University Resource Intelligence System - Technical Report</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 12mm 14mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Liberation Sans", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.8pt;
+    line-height: 1.35;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+  .page {
+    width: 100%;
+    height: 272mm;
+    max-height: 272mm;
+    page-break-after: always;
+    page-break-inside: avoid;
+    position: relative;
+    padding: 2mm 0 10mm 0;
+    overflow: hidden;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+
+  /* Running Header & Footer */
+  .running-header {
+    border-bottom: 1px solid #c0c6cc;
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+    font-size: 7.2pt;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .running-footer {
+    position: absolute;
+    bottom: 2mm;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #d0d7de;
+    padding-top: 3px;
+    font-size: 7.2pt;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Headings */
+  h1.doc-title {
+    font-size: 14pt;
+    font-weight: 800;
+    color: #0b2545;
+    margin: 2px 0 2px 0;
+    text-align: center;
+    letter-spacing: -0.2px;
+  }
+  .doc-subtitle {
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #334e68;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .inst-header {
+    text-align: center;
+    border-bottom: 1.5px solid #0b2545;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+  }
+  .inst-header .inst-name {
+    font-size: 11pt;
+    font-weight: 800;
+    color: #0b2545;
+    letter-spacing: 0.5px;
+  }
+  .inst-header .inst-sub {
+    font-size: 7.5pt;
+    color: #486581;
+    margin-top: 1px;
+  }
+  .inst-header .lab-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #102a43;
+    margin-top: 2px;
+  }
+
+  h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #0b2545;
+    border-bottom: 1px solid #bcccdc;
+    padding-bottom: 2px;
+    margin: 6px 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  h3 {
+    font-size: 8.8pt;
+    font-weight: 700;
+    color: #102a43;
+    margin: 4px 0 2px 0;
+  }
+
+  p {
+    margin: 0 0 4px 0;
+    text-align: justify;
+  }
+
+  /* Callout & Two-line box */
+  .desc-box {
+    background: #f0f4f8;
+    border-left: 3.5px solid #0b2545;
+    padding: 5px 8px;
+    margin: 5px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 8.4pt;
+  }
+  .desc-box b {
+    color: #0b2545;
+  }
+
+  /* Team Table */
+  .team-table-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin: 4px 0 6px 0;
+  }
+  .team-table {
+    border-collapse: collapse;
+    font-size: 7.8pt;
+    width: 250px;
+    border: 1px solid #bcccdc;
+  }
+  .team-table th {
+    background: #102a43;
+    color: #fff;
+    padding: 3px 6px;
+    text-align: left;
+    font-size: 7.5pt;
+  }
+  .team-table td {
+    padding: 2.5px 6px;
+    border: 1px solid #d9e2ec;
+  }
+
+  /* General Tables */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.6pt;
+    margin: 4px 0 6px 0;
+  }
+  table.data-table th {
+    background: #102a43;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 3.5px 5px;
+    border: 1px solid #243b53;
+    text-align: left;
+  }
+  table.data-table td {
+    padding: 3px 5px;
+    border: 1px solid #d9e2ec;
+    vertical-align: top;
+  }
+  table.data-table tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  /* Code & Formulas */
+  code {
+    font-family: "Cascadia Code", "Fira Code", Consolas, Courier, monospace;
+    font-size: 7.4pt;
+    background: #f0f4f8;
+    padding: 1px 3px;
+    border-radius: 3px;
+    border: 1px solid #d9e2ec;
+  }
+  .formula-box {
+    background: #f8fafc;
+    border: 1px solid #bcccdc;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 7.5pt;
+    margin: 4px 0;
+  }
+
+  /* Vector Diagrams */
+  .diagram-container {
+    width: 100%;
+    margin: 4px 0;
+    text-align: center;
+  }
+
+  /* Screenshot Card Mockup */
+  .mock-screen {
+    background: #0d1117;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 4px 0;
+    font-size: 7.4pt;
+  }
+  .mock-header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-bottom: 1px solid #21262d;
+    padding-bottom: 3px;
+    margin-bottom: 5px;
+  }
+  .mock-dots {
+    display: flex;
+    gap: 3px;
+  }
+  .mock-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+  .mock-title {
+    font-size: 7.2pt;
+    color: #8b949e;
+    font-weight: 600;
+  }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 6px;
+  }
+  .kpi-box {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+  }
+  .kpi-label { font-size: 6.2pt; color: #8b949e; text-transform: uppercase; }
+  .kpi-val { font-size: 10pt; font-weight: 700; color: #58a6ff; }
+  .kpi-sub { font-size: 6pt; color: #3fb950; }
+
+  /* Columns */
+  .col-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .caption {
+    font-size: 7.2pt;
+    font-style: italic;
+    color: #486581;
+    text-align: center;
+    margin-top: 1px;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===========================================================================
+     PAGE 1: COVER, TITLE, 2-LINE DESCRIPTION, PROBLEM & SYSTEM PIPELINE
+============================================================================ -->
+<div class="page">
+  <div class="inst-header">
+    <div class="inst-name">COIMBATORE INSTITUTE OF TECHNOLOGY</div>
+    <div class="inst-sub">(Government Aided Autonomous Institution Approved by AICTE, New Delhi & Affiliated to Anna University, Chennai)</div>
+    <div class="lab-title">DEPARTMENT OF COMPUTING &bull; BUSINESS INTELLIGENCE LABORATORY (20MSSL10)</div>
+  </div>
+
+  <h1 class="doc-title">University Resource Intelligence System</h1>
+  <div class="doc-subtitle">Technical Documentation: Data, Models, Architecture, and Decision Support</div>
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+    <div style="font-size:7.8pt; color:#334e68; line-height:1.4;">
+      <b>Degree / Programme:</b> M.Sc., Software Systems (5-Year Integrated)<br>
+      <b>Semester / Academic Year:</b> 9th Semester &bull; 2026<br>
+      <b>Laboratory Code:</b> 20MSSL10 (Business Intelligence Laboratory)
+    </div>
+    <table class="team-table">
+      <thead><tr><th colspan="2">TEAM MEMBERS</th></tr></thead>
+      <tbody>
+        <tr><td><b>Gurusatura T</b></td><td>71762231022</td></tr>
+        <tr><td><b>NiteshKumar S</b></td><td>71762231033</td></tr>
+        <tr><td colspan="2" style="font-size:7.2pt; color:#486581;">Class: M.Sc. Software Systems (9th Sem)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>1. Project Overview & Objective</h2>
+  <div class="desc-box">
+    <b>Project 2-Line Description:</b> An end-to-end Decision Support System (DSS) and Business Intelligence (BI) platform that combines cloud relational data engineering, automated conflict detection, machine learning demand forecasting, and an autonomous Groq LLM agent with real-time tool calling to optimize university course timetabling and classroom allocations.
+  </div>
+
+  <h3>1.1 The Operational Problem</h3>
+  <p>
+    University academic resource allocation is a complex multidimensional constraint-satisfaction challenge. Assigning course sections across physical classrooms and faculty timeslots frequently breaks down in practice—yielding classroom double-bookings, instructor schedule collisions, severely uneven facility utilization, and an inability to forecast enrollment shifts before term commencement. Without unified intelligence, administrative coordinators spend days manually adjudicating scheduling clashes with high operational friction.
+  </p>
+
+  <h3>1.2 The Big Picture: 4-Tier Analytical Architecture</h3>
+  <p>
+    The system resolves scheduling bottlenecks through four progressively deeper analytical tiers:
+  </p>
+  <table class="data-table" style="margin-bottom:5px;">
+    <thead>
+      <tr>
+        <th style="width:12%;">Tier Level</th>
+        <th style="width:28%;">Business Question Addressed</th>
+        <th style="width:28%;">Responsible System Layer</th>
+        <th style="width:32%;">Core Outputs Produced</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Level 1</b></td>
+        <td><i>What resources do we possess?</i></td>
+        <td>Database Layer (PostgreSQL / Supabase)</td>
+        <td>Audited counts of students, instructors, rooms, courses, timeslots</td>
+      </tr>
+      <tr>
+        <td><b>Level 2</b></td>
+        <td><i>What is currently occurring?</i></td>
+        <td>BI & Analytics Layer (SQL Windows)</td>
+        <td>Room scheduled hours, faculty session loads, double-booking logs</td>
+      </tr>
+      <tr>
+        <td><b>Level 3</b></td>
+        <td><i>What is forecasted to occur?</i></td>
+        <td>Forecasting Layer (Scikit-Learn OLS)</td>
+        <td>Per-course Fall 2026 demand projection, trend slopes, MAE bounds</td>
+      </tr>
+      <tr>
+        <td><b>Level 4</b></td>
+        <td><i>What remedial action to execute?</i></td>
+        <td>Recommendation & Agent Engine (Groq LLM)</td>
+        <td>Conflict resolution proposals, optimal room allocations, SQL traces</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>1.3 End-to-End System Flow at a Glance</h3>
+  <p>
+    The system decouples data computation from presentation: deterministic business logic resides strictly within tested Python/SQL modules, while the autonomous AI agent acts exclusively as a zero-hallucination orchestrator.
+  </p>
+  
+  <div class="diagram-container">
+    <svg width="100%" height="95" viewBox="0 0 700 95" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#102a43" />
+        </marker>
+      </defs>
+      <!-- Pipeline Boxes -->
+      <rect x="2" y="8" width="82" height="42" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="43" y="25" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">Raw Sources</text>
+      <text x="43" y="38" font-size="6.5" text-anchor="middle" fill="#0284c7">6 CSV Files</text>
+
+      <line x1="84" y1="29" x2="104" y2="29" stroke="#102a43" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="108" y="8" width="88" height="42" rx="4" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.2"/>
+      <text x="152" y="24" font-size="7.5" font-weight="700" text-anchor="middle" fill="#15803d">Stage 3: ETL</text>
+      <text x="152" y="34" font-size="6.2" text-anchor="middle" fill="#16a34a">Validity Flagging</text>
+      <text x="152" y="44" font-size="6.2" text-anchor="middle" fill="#16a34a">Term Synthesis</text>
+
+      <line x1="196" y1="29" x2="216" y2="29" stroke="#102a43" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="220" y="8" width="92" height="42" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="1.2"/>
+      <text x="266" y="24" font-size="7.5" font-weight="700" text-anchor="middle" fill="#a16207">PostgreSQL</text>
+      <text x="266" y="34" font-size="6.2" text-anchor="middle" fill="#ca8a04">Supabase Cloud 3NF</text>
+      <text x="266" y="44" font-size="6.2" text-anchor="middle" fill="#ca8a04">Foreign Key Indexes</text>
+
+      <line x1="312" y1="29" x2="332" y2="29" stroke="#102a43" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="336" y="8" width="102" height="42" rx="4" fill="#fae8ff" stroke="#a855f7" stroke-width="1.2"/>
+      <text x="387" y="24" font-size="7.5" font-weight="700" text-anchor="middle" fill="#7e22ce">BI & ML Models</text>
+      <text x="387" y="34" font-size="6.2" text-anchor="middle" fill="#9333ea">SQL Conflict Discovery</text>
+      <text x="387" y="44" font-size="6.2" text-anchor="middle" fill="#9333ea">OLS Demand Regression</text>
+
+      <line x1="438" y1="29" x2="458" y2="29" stroke="#102a43" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="462" y="8" width="112" height="42" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.2"/>
+      <text x="518" y="24" font-size="7.5" font-weight="700" text-anchor="middle" fill="#c2410c">Autonomous Agent</text>
+      <text x="518" y="34" font-size="6.2" text-anchor="middle" fill="#ea580c">Groq LLM Engine</text>
+      <text x="518" y="44" font-size="6.2" text-anchor="middle" fill="#ea580c">6 Function-Calling Tools</text>
+
+      <line x1="574" y1="29" x2="594" y2="29" stroke="#102a43" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="598" y="8" width="98" height="42" rx="4" fill="#f1f5f9" stroke="#475569" stroke-width="1.2"/>
+      <text x="647" y="24" font-size="7.5" font-weight="700" text-anchor="middle" fill="#1e293b">Streamlit UI</text>
+      <text x="647" y="34" font-size="6.2" text-anchor="middle" fill="#475569">Executive Dashboard</text>
+      <text x="647" y="44" font-size="6.2" text-anchor="middle" fill="#475569">Chat & SQL Accordeon</text>
+
+      <!-- Bottom Annotation -->
+      <path d="M 152 50 L 152 75 L 647 75 L 647 50" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="400" y="85" font-size="6.5" font-weight="600" text-anchor="middle" fill="#475569">Deterministic Execution Flow: High-speed In-Memory SQL & Regression Models back the AI Inference Layer</text>
+    </svg>
+    <div class="caption">Figure 1.1: Complete End-to-End System Pipeline and Data Flow Architecture</div>
+  </div>
+
+  <div class="running-footer">
+    <span>CIT Department of Computing &bull; 20MSSL10</span>
+    <span>University Resource Intelligence System &bull; Technical Report</span>
+    <span>Page 1 of 5</span>
+  </div>
+</div>
+
+<!-- ===========================================================================
+     PAGE 2: DATASET CREATION, PROFILING, RELATIONAL SCHEMA & ETL
+============================================================================ -->
+<div class="page">
+  <div class="running-header">
+    <span>CIT Department of Computing &bull; Business Intelligence Lab (20MSSL10)</span>
+    <span>Technical Documentation: Data & Models</span>
+  </div>
+
+  <h2>2. Dataset Creation, Profiling & Database Architecture</h2>
+  
+  <h3>2.1 Source Entities and Domain Roles</h3>
+  <p>
+    An initial institutional dataset was evaluated and formally rejected because it omitted classroom capacity and timetable entities. The operational environment was sourced across six relational files capturing the complete academic domain:
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:14%;">Entity</th>
+        <th style="width:8%;">Rows</th>
+        <th style="width:38%;">Key Attributes</th>
+        <th style="width:40%;">Domain Role & Analysis Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>students</code></td>
+        <td>3,000</td>
+        <td><code>student_id, first_name, last_name, email, major, year</code></td>
+        <td>Undergraduate student demographic profile; class-standing 1 to 4.</td>
+      </tr>
+      <tr>
+        <td><code>instructors</code></td>
+        <td>50</td>
+        <td><code>instructor_id, first_name, last_name, email, department</code></td>
+        <td>Teaching faculty; basis for workload distribution and faculty conflict analysis.</td>
+      </tr>
+      <tr>
+        <td><code>courses</code></td>
+        <td>22</td>
+        <td><code>course_id, course_code, course_name, credits, department</code></td>
+        <td>Curriculum catalog; target unit for linear regression demand forecasting.</td>
+      </tr>
+      <tr>
+        <td><code>classrooms</code></td>
+        <td>30</td>
+        <td><code>classroom_id, building_name, room_number, capacity</code></td>
+        <td>Physical venues across campus; evaluated for capacity fit and load balancing.</td>
+      </tr>
+      <tr>
+        <td><code>timeslots</code></td>
+        <td>100</td>
+        <td><code>timeslot_id, day, start_time, end_time, timeslot_valid</code></td>
+        <td>Weekly schedule grid (Mon–Fri, 08:00 to 18:00); flagged for time integrity.</td>
+      </tr>
+      <tr>
+        <td><code>schedule</code></td>
+        <td>9,082</td>
+        <td><code>schedule_id, student_id, course_id, instructor_id, classroom_id, timeslot_id, semester, academic_year</code></td>
+        <td><b>Central Fact Table:</b> Encapsulates 9,082 course registrations across 4 terms. Composite key <code>(student_id, course_id)</code> ensures unique enrollment.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Formal Dataset Profiling</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:25%;">Profiling Metric</th>
+        <th style="width:35%;">Observed Metric Value</th>
+        <th style="width:40%;">Engineering Treatment & Interpretation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Missing Values (Nulls)</b></td>
+        <td>0 nulls across all 6 tables and columns</td>
+        <td>Pristine baseline; no imputation required on operational entities.</td>
+      </tr>
+      <tr>
+        <td><b>Foreign Key Integrity</b></td>
+        <td>0 orphan foreign key records</td>
+        <td>Every <code>schedule</code> foreign key strictly maps to an existing parent entity.</td>
+      </tr>
+      <tr>
+        <td><b>Malformed Timeslots</b></td>
+        <td>44 of 100 rows (44.0%) have <code>end_time &le; start_time</code></td>
+        <td>Quarantined via <code>timeslot_valid=False</code>. Headcount queries retain rows; duration queries filter them.</td>
+      </tr>
+      <tr>
+        <td><b>Raw Collision Rate</b></td>
+        <td>2,380 of 2,853 room-timeslot pairs have &gt;1 course</td>
+        <td>83.4% raw collision rate reflects uncoordinated scheduling requests—the target problem for our DSS.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 Relational 3NF Schema & Vector Entity Connections</h3>
+  <div class="diagram-container">
+    <svg width="100%" height="96" viewBox="0 0 680 96" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="m1" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#0369a1" />
+        </marker>
+      </defs>
+      <!-- Dimension Tables (Top) -->
+      <rect x="25" y="4" width="105" height="34" rx="3" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="77" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">students (3,000)</text>
+      <text x="77" y="29" font-size="6.2" text-anchor="middle" fill="#475569">PK: student_id</text>
+
+      <rect x="160" y="4" width="105" height="34" rx="3" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="212" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">courses (22)</text>
+      <text x="212" y="29" font-size="6.2" text-anchor="middle" fill="#475569">PK: course_id</text>
+
+      <rect x="295" y="4" width="105" height="34" rx="3" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="347" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">instructors (50)</text>
+      <text x="347" y="29" font-size="6.2" text-anchor="middle" fill="#475569">PK: instructor_id</text>
+
+      <rect x="430" y="4" width="105" height="34" rx="3" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="482" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">classrooms (30)</text>
+      <text x="482" y="29" font-size="6.2" text-anchor="middle" fill="#475569">PK: classroom_id</text>
+
+      <rect x="565" y="4" width="100" height="34" rx="3" fill="#f8fafc" stroke="#0284c7" stroke-width="1.2"/>
+      <text x="615" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#0369a1">timeslots (100)</text>
+      <text x="615" y="29" font-size="6.2" text-anchor="middle" fill="#475569">PK: timeslot_id</text>
+
+      <!-- Arrows pointing to central schedule table -->
+      <line x1="77" y1="38" x2="160" y2="56" stroke="#0284c7" stroke-width="1.2" marker-end="url(#m1)"/>
+      <line x1="212" y1="38" x2="250" y2="56" stroke="#0284c7" stroke-width="1.2" marker-end="url(#m1)"/>
+      <line x1="347" y1="38" x2="347" y2="56" stroke="#0284c7" stroke-width="1.2" marker-end="url(#m1)"/>
+      <line x1="482" y1="38" x2="440" y2="56" stroke="#0284c7" stroke-width="1.2" marker-end="url(#m1)"/>
+      <line x1="615" y1="38" x2="520" y2="56" stroke="#0284c7" stroke-width="1.2" marker-end="url(#m1)"/>
+
+      <!-- Fact Table (Bottom Center) -->
+      <rect x="140" y="56" width="400" height="36" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+      <text x="340" y="70" font-size="8.2" font-weight="700" text-anchor="middle" fill="#38bdf8">schedule &bull; Fact Table (9,082 Rows in Third Normal Form)</text>
+      <text x="340" y="82" font-size="6.5" text-anchor="middle" fill="#94a3b8">FK: student_id | FK: course_id | FK: instructor_id | FK: classroom_id | FK: timeslot_id | semester | academic_year</text>
+    </svg>
+    <div class="caption">Figure 2.1: Star-Schema Relational Layout Enforcing Referential Integrity on Supabase PostgreSQL</div>
+  </div>
+
+  <div class="col-2">
+    <div>
+      <h3>2.4 Deterministic ETL Transformations</h3>
+      <p style="font-size:7.5pt;">
+        <b>1. Standardized Class Standing:</b> Converted text representations (Freshman, Sophomore, Junior, Senior) into integers <code>[1, 2, 3, 4]</code>.<br>
+        <b>2. Timeslot Chronology Check:</b> Evaluated <code>end_time &gt; start_time</code>. Flags 56 valid timeslots and isolates 44 invalid blocks.<br>
+        <b>3. Longitudinal Dimension Synthesis:</b> Sourced over 4 sequential terms (Fall 2024, Spring 2025, Fall 2025, Spring 2026) using fixed seed <code>42</code>.
+      </p>
+    </div>
+    <div>
+      <h3>2.5 Data Provenance & Lineage Tags</h3>
+      <table class="data-table" style="font-size:7.2pt; margin:0;">
+        <thead><tr><th>Tag</th><th>Meaning</th><th>Sample Columns</th></tr></thead>
+        <tbody>
+          <tr><td><code>real</code></td><td>Original raw source</td><td><code>capacity, credits, room_number</code></td></tr>
+          <tr><td><code>derived</code></td><td>Deterministic formula</td><td><code>timeslot_valid, total_scheduled_hours</code></td></tr>
+          <tr><td><code>synthetic</code></td><td>Multi-term dimension</td><td><code>semester, academic_year</code></td></tr>
+          <tr><td><code>model</code></td><td>Machine learning</td><td><code>forecast_Fall_2026, trend_direction</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="running-footer">
+    <span>CIT Department of Computing &bull; 20MSSL10</span>
+    <span>University Resource Intelligence System &bull; Technical Report</span>
+    <span>Page 2 of 5</span>
+  </div>
+</div>
+
+<!-- ===========================================================================
+     PAGE 3: SYSTEM MODULES & FUNCTIONAL ARCHITECTURE
+============================================================================ -->
+<div class="page">
+  <div class="running-header">
+    <span>CIT Department of Computing &bull; Business Intelligence Lab (20MSSL10)</span>
+    <span>Technical Documentation: Modules & Architecture</span>
+  </div>
+
+  <h2>3. System Modules & Functional Architecture</h2>
+  <p>
+    The system is engineered as seven decoupled modules, independently verifiable and organized in sequential pipeline order:
+  </p>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 1 — Enterprise ETL Pipeline (<code>src/etl.py</code>)</h3>
+    <p>
+      Ingests raw CSV inputs, cleanses typographical discrepancies, casts student years to database integers, parses timestamps into PostgreSQL <code>TIME</code> types, and flags invalid timeslots. Output: 6 clean datasets exported to <code>data/clean/</code>.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 2 — Relational Cloud Database Layer (<code>database/schema.sql</code>, <code>database/db_setup.py</code>)</h3>
+    <p>
+      Establishes a 3NF relational database schema in PostgreSQL (hosted on Supabase) with zero-config local SQLite fallback. Enforces referential integrity constraints across the central <code>schedule</code> fact table and creates B-Tree indexes on dimensional foreign keys (<code>classroom_id</code>, <code>instructor_id</code>, <code>timeslot_id</code>, <code>course_id</code>), reducing analytical aggregation query execution time to under 12ms.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 3 — Scheduling Conflict Detection Engine (<code>src/analytics.py</code>)</h3>
+    <p>
+      Executes deterministic SQL aggregation to discover two distinct operational scheduling conflicts:
+    </p>
+    <ul style="margin:2px 0 3px 14px; padding:0; font-size:8pt;">
+      <li><b>Classroom Collisions:</b> Identifies room-timeslot combinations hosting multiple distinct courses: <code>COUNT(DISTINCT course_id) &gt; 1</code>. Output logged to <code>reports/classroom_conflicts.csv</code>.</li>
+      <li><b>Instructor Double-Bookings:</b> Discovers faculty scheduled to teach multiple courses simultaneously: <code>COUNT(DISTINCT course_id) &gt; 1 OR COUNT(DISTINCT classroom_id) &gt; 1</code>. Output logged to <code>reports/instructor_conflicts.csv</code>.</li>
+    </ul>
+    <p>
+      <i>Session-Level Capacity Validation:</i> Employs exact session headcount rather than total course enrollment, ensuring accurate room fit evaluations without false-positive overflow warnings.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 4 — Machine Learning Course Demand Forecaster (<code>src/forecasting.py</code>)</h3>
+    <p>
+      Fits independent Ordinary Least Squares (OLS) Linear Regression models for each of the 22 catalog courses across 4 historical semesters ($t \in \{1, 2, 3, 4\}$). Generates point projections for Fall 2026 ($t=5$), computes regression slopes ($\beta_1$), Mean Absolute Error (MAE), and categorizes enrollment momentum into <i>Increasing</i>, <i>Decreasing</i>, or <i>Stable</i>.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 5 — Heuristic Room Recommendation Engine (<code>src/recommendation.py</code>)</h3>
+    <p>
+      Implements a deterministic, explainable resource allocator. Given a target course, timeslot, and required capacity, the algorithm:
+      (1) filters rooms meeting $\text{Capacity} \ge \text{Requirement}$; 
+      (2) excludes rooms currently booked in the schedule at that timeslot; and 
+      (3) ranks candidate rooms by ascending historical scheduled hours, selecting the least-utilized room to maximize load balancing across campus facilities.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 6 — Autonomous Agent Core (<code>src/agent.py</code>, <code>src/agent_tools.py</code>)</h3>
+    <p>
+      Wraps tested database and analytical functions as 6 standardized tools exposed to Groq's high-speed inference engine (<code>openai/gpt-oss-120b</code>) via native JSON function-calling. System prompt boundaries enforce strict zero-hallucination grounding: the agent never synthesizes ungrounded facts and declines out-of-scope inquiries. All tools execute live queries directly against the database.
+    </p>
+  </div>
+
+  <div style="margin-bottom:4px;">
+    <h3>Module 7 — Interactive Presentation Layer (<code>app.py</code>)</h3>
+    <p>
+      A high-performance Streamlit application featuring: (1) an Executive Dashboard presenting 4 KPI cards and Plotly interactive charts; (2) a WhatsApp-themed conversational AI workspace with session persistence, <code>&lt;&gt; Executed SQL</code> inspection accordions, interactive <code>📋 View Data</code> dataframe viewers, and visual intent-driven dynamic charting.
+    </p>
+  </div>
+
+  <table class="data-table" style="margin-top:6px;">
+    <thead>
+      <tr>
+        <th style="width:18%;">Controlled Agent Tool</th>
+        <th style="width:28%;">Input Parameters</th>
+        <th style="width:28%;">Analytical Method / SQL Routine</th>
+        <th style="width:26%;">Return Payload to LLM</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>get_classroom_utilization</code></td>
+        <td>None (Global scope)</td>
+        <td>Sum of scheduled hours in valid timeslots</td>
+        <td>JSON array of top rooms by usage</td>
+      </tr>
+      <tr>
+        <td><code>get_instructor_workload</code></td>
+        <td>None (Global scope)</td>
+        <td>Count of scheduled sessions per faculty</td>
+        <td>Ranked instructor session counts</td>
+      </tr>
+      <tr>
+        <td><code>get_course_demand</code></td>
+        <td>None (Global scope)</td>
+        <td>Aggregate student registrations per course</td>
+        <td>Course enrollment rankings</td>
+      </tr>
+      <tr>
+        <td><code>get_conflict_detection</code></td>
+        <td>None (Global scope)</td>
+        <td>Group-by collision discovery SQL queries</td>
+        <td>Room & instructor clash summaries</td>
+      </tr>
+      <tr>
+        <td><code>recommend_classroom</code></td>
+        <td><code>course_id, timeslot_id, capacity</code></td>
+        <td>Greedy constrained load-balancing heuristic</td>
+        <td>Recommended room + explanation</td>
+      </tr>
+      <tr>
+        <td><code>get_forecast</code></td>
+        <td>None (Global scope)</td>
+        <td>Per-course linear regression model lookup</td>
+        <td>Fall 2026 demand, slopes & MAE</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="running-footer">
+    <span>CIT Department of Computing &bull; 20MSSL10</span>
+    <span>University Resource Intelligence System &bull; Technical Report</span>
+    <span>Page 3 of 5</span>
+  </div>
+</div>
+
+<!-- ===========================================================================
+     PAGE 4: ALGORITHMS, TECHNOLOGY STACK & COMPUTATION TIMING
+============================================================================ -->
+<div class="page">
+  <div class="running-header">
+    <span>CIT Department of Computing &bull; Business Intelligence Lab (20MSSL10)</span>
+    <span>Technical Documentation: Algorithms & Technologies</span>
+  </div>
+
+  <h2>4. Algorithms, Technologies & Computation Lifecycle</h2>
+
+  <h3>4.1 Mathematical & Analytical Algorithms</h3>
+
+  <div class="col-2">
+    <div>
+      <h3 style="margin-top:0;">1. OLS Demand Regression</h3>
+      <p style="font-size:7.5pt;">
+        For each course $c$, historical enrollment $(t_i, y_i)$ across 4 terms is fitted via Ordinary Least Squares:
+      </p>
+      <div class="formula-box">
+        &beta;1 = &Sigma;((ti - t_mean)*(yi - y_mean)) / &Sigma;((ti - t_mean)^2)<br>
+        &beta;0 = y_mean - &beta;1 * t_mean<br>
+        Forecast (t=5): round(&beta;1 * 5 + &beta;0)<br>
+        MAE = (1/n) * &Sigma; |yi - y_pred|
+      </div>
+      <p style="font-size:7.3pt; color:#475569;">
+        Momentum: <code>&beta;1 &gt; 0.5</code> &rarr; Increasing; <code>&beta;1 &lt; -0.5</code> &rarr; Decreasing; else Stable.
+      </p>
+    </div>
+
+    <div>
+      <h3 style="margin-top:0;">2. Room Allocation Heuristic</h3>
+      <p style="font-size:7.5pt;">
+        Greedy constrained optimization to balance campus space:
+      </p>
+      <div class="formula-box">
+        R* = { r &isin; Rooms | Cap(r) &ge; C_req &and; r &notin; Booked(t*) }<br>
+        r_opt = argmin_{r &isin; R*} TotalScheduledHours(r)
+      </div>
+      <p style="font-size:7.3pt; color:#475569;">
+        Guarantees capacity compliance while allocating underutilized lecture halls.
+      </p>
+    </div>
+  </div>
+
+  <h3>3. Relational Set-Intersection Conflict Query</h3>
+  <div class="formula-box" style="font-size:7pt; line-height:1.25;">
+    SELECT c.building_name || ' ' || c.room_number AS room_name, t.day, t.start_time, t.end_time,<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;COUNT(DISTINCT s.course_id) AS overlapping_courses, STRING_AGG(DISTINCT cr.course_name, ' | ') AS course_names<br>
+    FROM schedule s JOIN classrooms c ON s.classroom_id = c.classroom_id JOIN timeslots t ON s.timeslot_id = t.timeslot_id<br>
+    JOIN courses cr ON s.course_id = cr.course_id GROUP BY c.classroom_id, room_name, t.timeslot_id, t.day, t.start_time, t.end_time<br>
+    HAVING COUNT(DISTINCT s.course_id) &gt; 1 ORDER BY overlapping_courses DESC;
+  </div>
+
+  <h3>4.2 Technology Stack</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:16%;">Stack Layer</th>
+        <th style="width:24%;">Technology Selected</th>
+        <th style="width:14%;">Version</th>
+        <th style="width:46%;">Implementation Role & Architectural Rationale</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Core Language</b></td>
+        <td>Python</td>
+        <td>3.11+</td>
+        <td>Unified implementation language across ETL, ML models, and user interface.</td>
+      </tr>
+      <tr>
+        <td><b>Cloud Database</b></td>
+        <td>PostgreSQL (Supabase)</td>
+        <td>15.x</td>
+        <td>Production relational store enforcing 3NF referential integrity and B-Tree indexes.</td>
+      </tr>
+      <tr>
+        <td><b>Local Store</b></td>
+        <td>SQLite (Fallback)</td>
+        <td>3.x</td>
+        <td>Zero-configuration local database ensuring offline developer productivity.</td>
+      </tr>
+      <tr>
+        <td><b>Data Engineering</b></td>
+        <td>Pandas, NumPy</td>
+        <td>2.2+, 1.26+</td>
+        <td>Vectorized array manipulation, dataset restructuring, and duration metrics.</td>
+      </tr>
+      <tr>
+        <td><b>Machine Learning</b></td>
+        <td>Scikit-Learn</td>
+        <td>1.4+</td>
+        <td>LinearRegression fit and Mean Absolute Error (MAE) computation.</td>
+      </tr>
+      <tr>
+        <td><b>AI Engine</b></td>
+        <td>Groq Cloud Inference</td>
+        <td>API v1</td>
+        <td>Hosts <code>openai/gpt-oss-120b</code> providing sub-second reasoning latency.</td>
+      </tr>
+      <tr>
+        <td><b>Agent Protocol</b></td>
+        <td>Native JSON Tool Calling</td>
+        <td>Schema v2</td>
+        <td>Deterministic function execution guaranteeing grounded, hallucination-free output.</td>
+      </tr>
+      <tr>
+        <td><b>Frontend / UI</b></td>
+        <td>Streamlit</td>
+        <td>1.32+</td>
+        <td>Rapid web interface rendering sessions, accordions, and input controls.</td>
+      </tr>
+      <tr>
+        <td><b>Visual BI</b></td>
+        <td>Plotly Express &amp; Graph Objects</td>
+        <td>5.18+</td>
+        <td>Interactive dark-themed charts with explicit element keys to prevent collisions.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>4.3 Computation Timing: Batch vs. Live Inference</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width:26%;">Metric / Artifact</th>
+        <th style="width:22%;">Execution Timing</th>
+        <th style="width:26%;">Generating Script</th>
+        <th style="width:26%;">Consumption Channel</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Timeslot Validation</b></td>
+        <td>Batch (ETL Phase)</td>
+        <td><code>src/etl.py</code></td>
+        <td>Classroom utilization queries &amp; UI</td>
+      </tr>
+      <tr>
+        <td><b>Term Trend Dimension</b></td>
+        <td>Batch (ETL Phase)</td>
+        <td><code>src/etl.py</code></td>
+        <td>Course demand time-series models</td>
+      </tr>
+      <tr>
+        <td><b>OLS Demand Models</b></td>
+        <td>Batch Fit (Pre-computed)</td>
+        <td><code>src/forecasting.py</code></td>
+        <td>Dashboard charts &amp; <code>get_forecast</code></td>
+      </tr>
+      <tr>
+        <td><b>Conflict Discovery</b></td>
+        <td>Live SQL Query</td>
+        <td><code>src/analytics.py</code></td>
+        <td>Executive KPI cards &amp; AI Agent tool</td>
+      </tr>
+      <tr>
+        <td><b>Room Recommendation</b></td>
+        <td>Live on Query Execution</td>
+        <td><code>src/recommendation.py</code></td>
+        <td>Evaluated in real-time per request</td>
+      </tr>
+      <tr>
+        <td><b>Natural Language Chat</b></td>
+        <td>Live on Query Execution</td>
+        <td><code>src/agent.py</code></td>
+        <td>Groq API inference with tool traces</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="running-footer">
+    <span>CIT Department of Computing &bull; 20MSSL10</span>
+    <span>University Resource Intelligence System &bull; Technical Report</span>
+    <span>Page 4 of 5</span>
+  </div>
+</div>
+
+<!-- ===========================================================================
+     PAGE 5: SCREENSHOTS, LIMITATIONS & CONCLUSION
+============================================================================ -->
+<div class="page">
+  <div class="running-header">
+    <span>CIT Department of Computing &bull; Business Intelligence Lab (20MSSL10)</span>
+    <span>Technical Documentation: Screenshots & Limitations</span>
+  </div>
+
+  <h2>5. User Interface & Screenshots</h2>
+
+  <div class="col-2">
+    <!-- Screen 1: Dashboard -->
+    <div>
+      <div class="mock-screen">
+        <div class="mock-header">
+          <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+          <div class="mock-title">Executive Resource Dashboard &bull; Tab 2</div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-box"><div class="kpi-label">Peak Room Util</div><div class="kpi-val">290 hrs</div><div class="kpi-sub">Hall 101</div></div>
+          <div class="kpi-box"><div class="kpi-label">Faculty Clashes</div><div class="kpi-val" style="color:#d29922;">12</div><div class="kpi-sub" style="color:#d29922;">Simultaneous</div></div>
+          <div class="kpi-box"><div class="kpi-label">Room Collisions</div><div class="kpi-val" style="color:#da3633;">18</div><div class="kpi-sub" style="color:#da3633;">Overlaps</div></div>
+          <div class="kpi-box"><div class="kpi-label">Top Demand</div><div class="kpi-val" style="color:#3fb950;">540</div><div class="kpi-sub" style="color:#3fb950;">Fall 2026</div></div>
+        </div>
+        <div style="background:#161b22; border:1px solid #30363d; border-radius:4px; padding:6px; font-size:6.5pt;">
+          <div style="color:#58a6ff; font-weight:600; margin-bottom:2px;">[Plotly Express Visualizations]</div>
+          &bull; Classroom Utilization: Top 10 Scheduled Rooms (Bar Chart)<br>
+          &bull; Faculty Workload: Top 10 Instructor Session Counts (Bar Chart)<br>
+          &bull; Course Demand Rankings &amp; Fall 2026 OLS Projections
+        </div>
+      </div>
+      <div class="caption">Figure 5.1: Executive KPI Dashboard displaying real-time campus utilization, conflict summaries, and enrollment forecasts.</div>
+    </div>
+
+    <!-- Screen 2: AI Chat -->
+    <div>
+      <div class="mock-screen">
+        <div class="mock-header">
+          <div class="mock-dots"><div class="mock-dot dot-r"></div><div class="mock-dot dot-y"></div><div class="mock-dot dot-g"></div></div>
+          <div class="mock-title">Autonomous AI Assistant &bull; Tab 1</div>
+        </div>
+        <div style="background:#161b22; border-radius:4px; padding:4px 6px; margin-bottom:4px; border-left:3px solid #238636; font-size:6.5pt;">
+          <b style="color:#7ee787;">User:</b> Who are the top 5 faculty members with the heaviest teaching load?
+        </div>
+        <div style="background:#161b22; border-radius:4px; padding:4px 6px; border-left:3px solid #58a6ff; font-size:6.5pt; line-height:1.25;">
+          <b style="color:#58a6ff;">Assistant:</b> Top 5 faculty members by teaching load:<br>
+          1. Heather Molina (Management): 209 sessions<br>
+          2. Craig Haynes (Business Admin): 206 sessions<br>
+          3. Jerry Lee (Business Admin): 206 sessions<br>
+          <div style="color:#8b949e; margin-top:2px; font-family:monospace;">&gt; Executed SQL: SELECT instructor_name, COUNT(*)...</div>
+          <div style="color:#8b949e; font-family:monospace;">[+] View Data (20 rows) | [📊 Show Chart]</div>
+        </div>
+      </div>
+      <div class="caption">Figure 5.2: Natural Language Assistant delivering grounded answers, SQL audit traces, and on-demand visualization.</div>
+    </div>
+  </div>
+
+  <h2>6. Known Assumptions & Limitations</h2>
+  <div style="font-size:7.8pt; line-height:1.35;">
+    <p><b>1. Synthetic Longitudinal Dimension:</b> While student, instructor, room, and course attributes reflect real operational constraints, the 4-term semester dimension was generated during ETL with a fixed random seed (<code>SEED=42</code>) to benchmark regression algorithms. Institutional deployment requires multi-year historical logs.</p>
+    <p><b>2. Static Timetable Snapshots:</b> The database models discrete semester snapshots rather than continuous dynamic event bookings, holiday calendar shifts, or ad-hoc examination seating.</p>
+    <p><b>3. Linear Demand Modeling:</b> OLS regression assumes linear growth/decay trajectories; sharp nonlinear demand shocks from curriculum redesigns or department shifts are bounded by linear slopes and reported alongside their Mean Absolute Error (MAE).</p>
+    <p><b>4. Campus Physical Topology:</b> The classroom recommender optimizes based on capacity and scheduled hours; walking distances between campus buildings for back-to-back classes are omitted in the current heuristic.</p>
+    <p><b>5. Timeslot Preservation:</b> Malformed timeslots (44 of 100) are flagged via <code>timeslot_valid=False</code> and quarantined rather than purged, preserving real student enrollments while insulating duration metrics from calculation errors.</p>
+  </div>
+
+  <div style="margin-top:14px; border-top:1.5px solid #0b2545; padding-top:6px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-size:7.5pt; color:#334e68;">
+      <b>Department of Computing &bull; Coimbatore Institute of Technology</b><br>
+      Laboratory Course: 20MSSL10 &bull; Academic Year 2026
+    </div>
+    <div style="font-size:7.5pt; color:#334e68; text-align:right;">
+      <b>Repository:</b> <code>github.com/gurusatura/University_Resource_Intelligence</code><br>
+      <b>Deployment:</b> Streamlit Cloud &bull; PostgreSQL on Supabase
+    </div>
+  </div>
+
+  <div class="running-footer">
+    <span>CIT Department of Computing &bull; 20MSSL10</span>
+    <span>University Resource Intelligence System &bull; Technical Report</span>
+    <span>Page 5 of 5</span>
+  </div>
+</div>
+
+</body>
+</html>
