@@ -1,26 +1,28 @@
 <!--
 ================================================================================
-PROMPT / INSTRUCTIONS FOR CLAUDE (DOCUMENT COMPILER)
+BULLETPROOF INSTRUCTIONS FOR CLAUDE (DOCUMENT COMPILER)
 ================================================================================
-Instructions for Claude:
-Please compile the following markdown content into a formal, publication-quality
-academic/technical laboratory report for Coimbatore Institute of Technology.
+PROMPT TO COPY INTO CLAUDE:
+"You are compiling a formal academic technical documentation report for:
+COIMBATORE INSTITUTE OF TECHNOLOGY (Department of Computing, Business Intelligence Lab 20MSSL10).
 
-Formatting Requirements:
-1. Target Length: Maximum 5 pages (excluding title/cover page, or compact 5 pages total).
-2. Layout & Typography: 
-   - Standard Academic/Industry Report layout (Times New Roman or Palatino, 10-11pt body, 1.15 line spacing).
-   - Clean professional tables with horizontal borders (booktabs style).
-   - Code snippets and SQL blocks formatted in monospace with light shaded background.
-   - Insert the provided screenshot placeholders into two-column or framed figure blocks with captions.
-3. Front Matter:
-   - Institution: COIMBATORE INSTITUTE OF TECHNOLOGY (Government Aided Autonomous Institution, Affiliated to Anna University, Chennai)
-   - Department: Department of Computing
-   - Laboratory: BUSINESS INTELLIGENCE LABORATORY (20MSSL10)
-   - Degree / Class: M.Sc. Software Systems (9th Semester)
-   - Document Title: University Resource Intelligence System: Technical Documentation: Data, Models, Architecture, and Decision Support
-   - Team Members / Author block formatted cleanly.
-4. Structure: Preserve all sections (Overview, Dataset Description, Modules, Algorithms & Technologies, Computation Timeline, Screenshots, Known Limitations).
+CRITICAL FORMATTING & LAYOUT RULES:
+1. STRICT PAGE BUDGET: The entire document MUST FIT WITHIN EXACTLY 5 PAGES (A4). 
+   Do NOT stretch or expand this into 10–12 pages. Tighten spacing, set margins to 0.5 inches (12.7mm), 
+   and use 10pt body font with 1.15 line spacing.
+2. ZERO ASCII ART: NEVER use ASCII line-art or text boxes with dashes/slashes, as proportional fonts 
+   scramble and break them into illegible text. Format all architectures and schemas as structured tables 
+   or elegant shaded callout boxes.
+3. NO EMPTY GAPS: For screenshots, do NOT render large blank boxes. Render compact, framed UI caption blocks.
+4. PAGE ALLOCATION (EXACTLY 5 PAGES):
+   - Page 1: CIT Header, Title, Team Table (Gurusatura T, NiteshKumar S), 2-Line Project Description, 
+     Problem Statement, and 4-Tier Analytical Architecture Table.
+   - Page 2: Dataset Description (6 Relational Tables), Profiling Results, 3NF Star-Schema Architecture Table, 
+     ETL Transformations, and Data Provenance Tags.
+   - Page 3: System Modules (Modules 1 to 7) and Controlled Agent Tool Interface Table.
+   - Page 4: Mathematical Formulations (OLS Regression formulas, Greedy Room Heuristic, SQL Conflict Query), 
+     Technology Stack Table, and Batch vs. Live Computation Timeline.
+   - Page 5: System UI Captions & Mockup Frames, Known Assumptions & Limitations (5 points), and Institutional Footer."
 ================================================================================
 -->
 
@@ -42,37 +44,22 @@ An end-to-end Decision Support System (DSS) and Business Intelligence (BI) platf
 
 ## 1. Overview & System Big Picture
 
-### 1.1 The Problem
-University academic scheduling is an NP-hard multidimensional constraint satisfaction challenge. Allocating hundreds of courses across constrained classrooms and faculty timeslots frequently produces room double-bookings, instructor schedule clashes, suboptimal capacity utilization, and inability to anticipate future enrollment surges. 
+### 1.1 The Operational Problem
+University academic scheduling is an NP-hard multidimensional constraint satisfaction challenge. Allocating hundreds of courses across constrained classrooms and faculty timeslots frequently produces room double-bookings, instructor schedule clashes, suboptimal capacity utilization, and inability to anticipate future enrollment surges. Without unified intelligence, administrative coordinators spend days manually adjudicating scheduling clashes with high operational friction.
 
-### 1.2 The Big Picture
-The **University Resource Intelligence System** solves this via a unified two-tier architecture:
-1. **Executive BI Dashboard:** An interactive analytical dashboard tracking key performance indicators (KPIs), classroom utilization hours, faculty teaching workloads, course enrollment distributions, and Fall 2026 demand projections.
-2. **Autonomous AI Scheduling Assistant:** A conversational natural language decision support agent powered by Groq's low-latency inference engine with native function-calling over 6 database and analytical tools, delivering grounded SQL-backed recommendations, tabular breakdowns, and on-demand Plotly visualizations.
+### 1.2 The Big Picture: 4-Tier Analytical Architecture
+The **University Resource Intelligence System** resolves scheduling bottlenecks through four progressively deeper analytical tiers:
 
-```
-+-----------------------------------------------------------------------------------+
-|                            SYSTEM PIPELINE AT A GLANCE                            |
-+-----------------------------------------------------------------------------------+
-  [ Raw Data Sources ]  -->  [ Stage 3: ETL Pipeline ]  -->  [ PostgreSQL / Cloud ]
-  (Students, Rooms,          (Time validation, Types,         (Supabase 3NF Tables
-   Instructors, Sched)        Term generation)                 & Referential Integrity)
-                                     │                                  │
-                                     ▼                                  ▼
-                            [ Stage 7: ML Engine ]            [ Stage 6: Conflict SQL ]
-                            (Linear Regression OLS            (Double-booking & Overlap
-                             Course Demand Forecasting)        Detection Engine)
-                                     │                                  │
-                                     └────────────────┬─────────────────┘
-                                                      ▼
-                                          [ Stage 9 & 10: AI Agent ]
-                                          (Groq openai/gpt-oss-120b
-                                           with 6 Live DB Tools)
-                                                      │
-                                                      ▼
-                                          [ Stage 11: Streamlit UI ]
-                                          (Executive Dashboard & Chat)
-```
+| Tier Level | Business Question Addressed | Responsible System Layer | Core Outputs Produced |
+|---|---|---|---|
+| **Level 1** | *What resources do we possess?* | Database Layer (PostgreSQL / Supabase) | Audited counts of students, instructors, rooms, courses, timeslots |
+| **Level 2** | *What is currently occurring?* | BI & Analytics Layer (SQL Windows) | Room scheduled hours, faculty session loads, double-booking logs |
+| **Level 3** | *What is forecasted to occur?* | Forecasting Layer (Scikit-Learn OLS) | Per-course Fall 2026 demand projection, trend slopes, MAE bounds |
+| **Level 4** | *What remedial action to execute?* | Recommendation & Agent Engine (Groq LLM) | Conflict resolution proposals, optimal room allocations, SQL traces |
+
+### 1.3 End-to-End System Flow at a Glance
+Deterministic business logic resides strictly within tested Python/SQL modules, while the autonomous AI agent acts exclusively as a zero-hallucination orchestrator:
+`Raw Datasets (6 CSVs) → Stage 3: ETL (Validation & Term Synthesis) → Stage 4: Supabase Cloud DB (3NF Schema) → Stage 5 & 6: BI & Conflict Analytics → Stage 7 & 8: ML Demand Forecasting & Room Allocator → Stage 9 & 10: Groq LLM Agent (6 DB Tools) → Stage 11: Streamlit Executive UI`
 
 ---
 
@@ -93,18 +80,14 @@ The system ingests and reconciles 6 relational entities representing a comprehen
 ### 2.2 Relational Schema & Entity Connections
 The database is structured in Third Normal Form (3NF) hosted on Supabase PostgreSQL (with automatic local SQLite fallback):
 
-```
-       [ students ]                [ courses ]               [ instructors ]
-            │ (1:N)                     │ (1:N)                    │ (1:N)
-            ▼                           ▼                          ▼
-      +------------------------------------------------------------------+
-      |                           schedule                               |
-      |   (Central Fact Table: 9,082 Allocations across 4 Semesters)     |
-      +------------------------------------------------------------------+
-            ▲                           ▲
-            │ (N:1)                     │ (N:1)
-       [ classrooms ]              [ timeslots ]
-```
+| Dimension Entity | Relationship Cardinality | Fact Foreign Key | Enforced Constraint |
+|---|---|---|---|
+| `students` (3,000) | One-to-Many (1:N) | `schedule.student_id` | Foreign Key, Indexed |
+| `courses` (22) | One-to-Many (1:N) | `schedule.course_id` | Foreign Key, Indexed |
+| `instructors` (50) | One-to-Many (1:N) | `schedule.instructor_id` | Foreign Key, Indexed |
+| `classrooms` (30) | One-to-Many (1:N) | `schedule.classroom_id` | Foreign Key, Indexed |
+| `timeslots` (100) | One-to-Many (1:N) | `schedule.timeslot_id` | Foreign Key, Indexed |
+| **Central Fact Table** | **`schedule` (9,082 Rows)** | **Composite PK: `(student_id, course_id)`** | **Third Normal Form (3NF)** |
 
 ### 2.3 ETL Data Quality Engineering (`src/etl.py`)
 Data integrity is enforced through a deterministic 5-step ETL pipeline:
@@ -121,19 +104,15 @@ Data integrity is enforced through a deterministic 5-step ETL pipeline:
 
 ## 3. System Modules & Functional Architecture
 
-```
-+-----------------------------------------------------------------------------------------+
-|                                    MODULE ARCHITECTURE                                  |
-+-----------------------------------------------------------------------------------------+
-| Module 1: Enterprise ETL Pipeline (Data Ingestion, Time Validation, Term Synthesis)    |
-| Module 2: Relational Cloud Database Layer (PostgreSQL / Supabase 3NF Storage)           |
-| Module 3: Scheduling Conflict Detection Engine (SQL Group-By Collision Discovery)       |
-| Module 4: ML Course Demand Forecaster (Scikit-Learn OLS Linear Regression per Course)   |
-| Module 5: Heuristic Room Recommendation Engine (Constraint Filtering & Load Balancing)  |
-| Module 6: Autonomous Agent Core (Groq Tool-Calling Engine, Intent Classifier)          |
-| Module 7: Interactive Presentation UI (Streamlit Dark Theme, Executive Dashboard & Chat)|
-+-----------------------------------------------------------------------------------------+
-```
+| Module Index | Module Name & Script Reference | Core Functional Role |
+|---|---|---|
+| **Module 1** | Enterprise ETL Pipeline (`src/etl.py`) | Ingests 6 CSVs, standardizes student years, flags invalid timeslots, synthesizes terms. |
+| **Module 2** | Relational Database Layer (`database/schema.sql`) | Enforces 3NF foreign keys and B-Tree indexes on Supabase PostgreSQL / SQLite. |
+| **Module 3** | Conflict Detection Engine (`src/analytics.py`) | Discovers room collisions and instructor double-bookings via SQL group-by queries. |
+| **Module 4** | ML Course Demand Forecaster (`src/forecasting.py`) | Fits per-course OLS linear regression across 4 terms to project Fall 2026 demand. |
+| **Module 5** | Room Recommendation Engine (`src/recommendation.py`) | Solves greedy constrained capacity matching and utilization-ranked load balancing. |
+| **Module 6** | Autonomous Agent Core (`src/agent.py`) | Orchestrates Groq `openai/gpt-oss-120b` with 6 function-calling tools and zero hallucinations. |
+| **Module 7** | Interactive UI Layer (`app.py`) | Streamlit application hosting Executive KPI Dashboard and conversational AI chat. |
 
 ### 3.1 Module 1: Enterprise ETL Pipeline (`src/etl.py`)
 Cleanses raw operational files, validates relational foreign keys, computes duration validity, and exports pristine datasets to `data/clean/`.
