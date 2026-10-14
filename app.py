@@ -397,12 +397,12 @@ with tab_assistant:
 
                 # Render dynamic chart if present
                 if msg.get("chart_obj"):
-                    chart_key = f"chart_{current_session['id']}_{idx}_{msg.get('id', 'msg')}"
+                    chart_key = f"chart_{st.session_state.current_session_id}_{idx}_{msg.get('id', 'msg')}"
                     st.plotly_chart(msg["chart_obj"], use_container_width=True, key=chart_key)
                 elif msg.get("data_records") and msg.get("tool_name") in ["get_classroom_utilization", "get_instructor_workload", "get_course_demand", "get_forecast"]:
                     b_col, _ = st.columns([2, 5])
                     with b_col:
-                        if st.button("📊 Show Chart", key=f"btn_vis_{current_session['id']}_{idx}_{msg.get('id', 'msg')}", help="Generate interactive visualization"):
+                        if st.button("📊 Show Chart", key=f"btn_vis_{st.session_state.current_session_id}_{idx}_{msg.get('id', 'msg')}", help="Generate interactive visualization"):
                             msg["chart_obj"] = make_chart_for_tool(msg.get("tool_name"), msg.get("data_records"))
                             st.rerun()
 
